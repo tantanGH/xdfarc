@@ -5,9 +5,9 @@ if [ "${XDEV68K_DIR}" == "" ]; then
   exit 1
 fi
 
-TARGET_FILE="EZSPLIT.X"
-DOC_FILE="../EZSPLIT.DOC"
-ZIP_FILE="../../EZSPL010.ZIP"
+TARGET_FILE="XDFARC.X"
+DOC_FILE="../XDFARC.DOC"
+ZIP_FILE="../../XDFAC010.ZIP"
 
 CC=${XDEV68K_DIR}/m68k-toolchain/bin/m68k-elf-gcc
 GAS2HAS="${XDEV68K_DIR}/util/x68k_gas2has.pl -cpu 68000 -inc doscall.inc -inc iocscall.inc"
@@ -54,8 +54,8 @@ function do_compile() {
   return 0
 }
 
-function build_ezsplit() {
-  do_compile . "main"
+function build_xdfarc() {
+  do_compile . "ff ffsystem xdf main"
   if [ $? != 0 ]; then
     return $?
   fi
@@ -74,4 +74,4 @@ function build_ezsplit() {
   return 0
 }
 
-build_ezsplit
+build_xdfarc

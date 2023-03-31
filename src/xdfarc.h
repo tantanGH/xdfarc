@@ -1,5 +1,5 @@
-#ifndef __H_EZSPLIT__
-#define __H_EZSPLIT__
+#ifndef __H_XDFARC__
+#define __H_XDFARC__
 
 #include <stdint.h>
 #include <stddef.h>
@@ -16,7 +16,9 @@
 typedef struct {
   size_t size_bytes;
   int16_t chunk;
+  int16_t num_chunks;
   int16_t destination;
+  uint8_t name[ MAX_PATH_LEN ];
   uint8_t path_name[ MAX_PATH_LEN ];
   uint8_t out_name[ MAX_PATH_LEN ];
 } FILE_SPLIT;

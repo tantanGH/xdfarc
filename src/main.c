@@ -4,15 +4,16 @@
 #include <stdlib.h>
 #include <doslib.h>
 #include <iocslib.h>
-#include "ezsplit.h"
+#include "zsplit.h"
 
 //
 //  show help message
 //
 static void show_help_message() {
-  printf("usage: ezsplit [options] <source-dir>\n");
+  printf("usage: xdfarc [options] <source-dir>\n");
   printf("options:\n");
   printf("   -o <output-dir> ... output directory\n");
+  printf("   -b <base-name>  ... output folder base name (default:xdf, max:6bytes)\n");
   printf("   -h              ... show help message\n");
 }
 
@@ -49,8 +50,12 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
   // file split pointers
   FILE_SPLIT* file_splits = NULL;
 
+  // base name
+  uint8_t base_name[ 8 ];
+  strcpy(base_name, "xdf");
+
   // credit
-  printf("EZSPLIT.X - A simple file set split utility for multiple XDFs " VERSION " by tantan\n");
+  printf("XDFARC.X - File archive utility in XDF format for X680x0 " VERSION " by tantan\n");
 
   // check command line
   if (argc < 2) {
@@ -64,6 +69,13 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
       if (argv[i][1] == 'o') {
         if (i + 1 < argc) {
           out_dir = argv[ i + 1 ];
+        } else {
+          show_help_message();
+          goto exit;
+        }
+      } else if (argv[i][1] == 'b') {
+        if (i + 1 < argc && strlen(argv[ i + 1 ]) <= 6) {
+          strcpy(base_name, argv[ i + 1 ]);
         } else {
           show_help_message();
           goto exit;
@@ -139,10 +151,12 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
       while (len > 0) {
         FILE_SPLIT* fs = &(file_splits[spi++]);
         fs->chunk = chunk++;
+        fs->num_chunks = 1 + filbuf.filelen / FD_2HD_BYTES;
+        strcpy(fs->name, filbuf.name);
         strcpy(fs->path_name, src_dir);
         strcat(fs->path_name, "\\");
-        strcat(fs->path_name, filbuf.name);
-        strcat(fs->out_name, filbuf.name);
+        strcat(fs->path_name, fs->name);
+        strcat(fs->out_name, fs->name);
         uint8_t* file_ext = strchr(fs->out_name, '.');
         if (file_ext == NULL) {
           file_ext = fs->out_name + strlen(fs->out_name);
@@ -150,13 +164,18 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
         sprintf(file_ext, ".%03d", fs->chunk - 1);        
         fs->size_bytes = len > FD_2HD_BYTES ? FD_2HD_BYTES : len;
         len -= FD_2HD_BYTES;
+        if (chunk > 10) {
+          printf("error: too large file. (%s)\n", filbuf.name);
+          goto exit;
+        }
       }
     } else {
       FILE_SPLIT* fs = &(file_splits[spi++]);
+      strcpy(fs->name, filbuf.name);
       strcpy(fs->path_name, src_dir);
       strcat(fs->path_name, "\\");
-      strcat(fs->path_name, filbuf.name);
-      strcat(fs->out_name, filbuf.name);
+      strcat(fs->path_name, fs->name);
+      strcat(fs->out_name, fs->name);
       fs->size_bytes = filbuf.filelen;
     }
   }
@@ -169,10 +188,12 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
       while (len > 0) {
         FILE_SPLIT* fs = &(file_splits[spi++]);
         fs->chunk = chunk++;
+        fs->num_chunks = 1 + filbuf.filelen / FD_2HD_BYTES;
+        strcpy(fs->name, filbuf.name);
         strcpy(fs->path_name, src_dir);
         strcat(fs->path_name, "\\");
-        strcat(fs->path_name, filbuf.name);
-        strcat(fs->out_name, filbuf.name);
+        strcat(fs->path_name, fs->name);
+        strcat(fs->out_name, fs->name);
         uint8_t* file_ext = strchr(fs->out_name, '.');
         if (file_ext == NULL) {
           file_ext = fs->out_name + strlen(fs->out_name);
@@ -180,13 +201,18 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
         sprintf(file_ext, ".%03d", fs->chunk - 1);
         fs->size_bytes = len > FD_2HD_BYTES ? FD_2HD_BYTES : len;
         len -= FD_2HD_BYTES;
+        if (chunk > 10) {
+          printf("error: too large file. (%s)\n", filbuf.name);
+          goto exit;
+        }
       }
     } else {
       FILE_SPLIT* fs = &(file_splits[spi++]);
+      strcpy(fs->name, filbuf.name);
       strcpy(fs->path_name, src_dir);
       strcat(fs->path_name, "\\");
-      strcat(fs->path_name, filbuf.name);
-      strcat(fs->out_name, filbuf.name);
+      strcat(fs->path_name, fs->name);
+      strcat(fs->out_name, fs->name);
       fs->size_bytes = filbuf.filelen;
     }
   }
@@ -221,12 +247,29 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
   } while (overflow); 
 
   // create target directories
+  int16_t overwrite = 0;
   for (int16_t i = 0; i < num_xdf; i++) {
     static uint8_t xdf_dir[ MAX_PATH_LEN ];
-    sprintf(xdf_dir, "%s\\xdf%02d", out_dir, i);
-    if (MKDIR(xdf_dir) < 0) {
-      printf("error: xdf directory creation error.\n");
-      goto exit;
+    sprintf(xdf_dir, "%s\\%s%02d", out_dir, base_name, i);
+    if (FILES(&filbuf, xdf_dir, 0x10) >= 0) {
+      if (!overwrite) {
+        printf("warning: output directory (%s) already exists. overwrite? (y/n)", xdf_dir);
+        uint8_t c;
+        do {
+          c = INKEY();
+          if (c == 'n' || c == 'N') {
+            printf("\ncanceled.\n");
+            goto exit;
+          }
+        } while (c != 'y' && c != 'Y');
+        printf("\n");
+        overwrite = 1;
+      }
+    } else {
+      if (MKDIR(xdf_dir) < 0) {
+        printf("error: xdf directory creation error.\n");
+        goto exit;
+      }
     }
   }
 
@@ -235,14 +278,14 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
   static uint8_t out_path_name[ MAX_PATH_LEN ];
   for (int16_t i = 0; i < file_split_count; i++) {
     FILE_SPLIT* fs = &(file_splits[i]);
-    printf("xdf%02d <-- %s (%d bytes)\n", fs->destination, fs->out_name, fs->size_bytes);
+    printf("%s%02d <-- %s (%d bytes)\n", base_name, fs->destination, fs->out_name, fs->size_bytes);
     if (fs->chunk > 0) {
       fp = fopen(fs->path_name, "rb");
       if (fp == NULL) {
         printf("error: file read open error. (%s)\n", fs->path_name);
         goto exit;
       }
-      sprintf(out_path_name, "%s\\xdf%02d\\%s", out_dir, fs->destination, fs->out_name);
+      sprintf(out_path_name, "%s\\%s%02d\\%s", out_dir, base_name, fs->destination, fs->out_name);
       fo = fopen(out_path_name, "wb");
       if (fo == NULL) {
         printf("error: file write open error. (%s)\n", out_path_name);
@@ -266,7 +309,7 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
         printf("error: file read open error. (%s)\n", fs->path_name);
         goto exit;
       }
-      sprintf(out_path_name, "%s\\xdf%02d\\%s", out_dir, fs->destination, fs->out_name);
+      sprintf(out_path_name, "%s\\%s%02d\\%s", out_dir, base_name, fs->destination, fs->out_name);
       fo = fopen(out_path_name, "wb");
       if (fo == NULL) {
         printf("error: file write open error. (%s)\n", out_path_name);
@@ -287,7 +330,38 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
   }
 
   // merge batch
-
+  for (int16_t i = 0; i < file_split_count; i++) {
+    FILE_SPLIT* fs = &(file_splits[i]);
+    if (fs->chunk == 0 || fs->chunk < fs->num_chunks) continue;
+    if (fo == NULL) {
+      size_t min_size = xdf_sizes[0];
+      int16_t min_xdf = 0;
+      for (int16_t j = 1; j < num_xdf; j++) {
+        if (xdf_sizes[j] < min_size) {
+          min_size = xdf_sizes[j];
+          min_xdf = j;
+        }
+      }
+      static uint8_t out_path_name[ MAX_PATH_LEN ];
+      sprintf(out_path_name, "%s\\%s%02d\\%s", out_dir, base_name, min_xdf, "zsplit_merge.bat");
+      fo = fopen(out_path_name, "w");
+      if (fo == NULL) {
+        printf("error: file write open error. (%s)\n", out_path_name);
+        goto exit;
+      }
+    }
+    static uint8_t line[ MAX_PATH_LEN * 12 ];
+    strcpy(line, "copy ");
+    for (int16_t j = 0; j < fs->num_chunks; j++) {
+      if (j > 0) strcat(line, "+");
+      strcat(line, fs->out_name);
+      sprintf(line + strlen(line) - 3, "%03d", j);
+    }
+    strcat(line, " ");
+    strcat(line, fs->name);
+    strcat(line, "\n");
+    fputs(line, fo);
+  }
 
 exit:
 
