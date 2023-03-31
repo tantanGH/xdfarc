@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include "ff.h"
 
 #define XDF_MAX_PATH_LEN (256)
 
@@ -15,6 +16,9 @@
 typedef struct {
   uint8_t name[ XDF_MAX_PATH_LEN ];
   FILE* fp;
+  size_t written_bytes;
+  uint8_t drive;
+  FATFS fs;
 } XDF;
 
 int32_t xdf_init(XDF* xdf, const uint8_t* xdf_name, uint8_t drive);

@@ -9,7 +9,6 @@
 #define MAX_PATH_LEN (256)
 
 #define FD_2HD_BYTES (1248000)
-#define MAX_XDF (64)
 
 #define FREAD_BUF_BYTES (32768)
 

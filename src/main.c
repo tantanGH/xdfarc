@@ -4,17 +4,16 @@
 #include <stdlib.h>
 #include <doslib.h>
 #include <iocslib.h>
-#include "zsplit.h"
+#include "xdf.h"
+#include "xdfarc.h"
 
 //
 //  show help message
 //
 static void show_help_message() {
-  printf("usage: xdfarc [options] <source-dir>\n");
+  printf("usage: xdfarc <xdf-prefix(max6bytes)> <source-dir>\n");
   printf("options:\n");
-  printf("   -o <output-dir> ... output directory\n");
-  printf("   -b <base-name>  ... output folder base name (default:xdf, max:6bytes)\n");
-  printf("   -h              ... show help message\n");
+  printf("   -h ... show help message\n");
 }
 
 //
@@ -38,24 +37,21 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
   // src dir name
   uint8_t* src_dir = NULL;
 
-  // out dir name
-  uint8_t* out_dir = NULL;
+  // xdf prefix name
+  uint8_t* xdf_prefix = NULL;
 
   // src file pointer
   FILE* fp = NULL;
 
-  // out file pointer
-  FILE* fo = NULL;
-
   // file split pointers
   FILE_SPLIT* file_splits = NULL;
 
-  // base name
-  uint8_t base_name[ 8 ];
-  strcpy(base_name, "xdf");
+  // XDF handlers
+  XDF xdf[ XDF_MAX_DRIVES ];
+  memset(xdf, 0, sizeof(XDF) * XDF_MAX_DRIVES);
 
   // credit
-  printf("XDFARC.X - File archive utility in XDF format for X680x0 " VERSION " by tantan\n");
+  printf("XDFARC.X - XDF format file archiver for X680x0 " VERSION " by tantan\n");
 
   // check command line
   if (argc < 2) {
@@ -66,21 +62,7 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
   // parse command lines
   for (int16_t i = 1; i < argc; i++) {
     if (argv[i][0] == '-' && strlen(argv[i]) >= 2) {
-      if (argv[i][1] == 'o') {
-        if (i + 1 < argc) {
-          out_dir = argv[ i + 1 ];
-        } else {
-          show_help_message();
-          goto exit;
-        }
-      } else if (argv[i][1] == 'b') {
-        if (i + 1 < argc && strlen(argv[ i + 1 ]) <= 6) {
-          strcpy(base_name, argv[ i + 1 ]);
-        } else {
-          show_help_message();
-          goto exit;
-        }
-      } else if (argv[i][1] == 'h') {
+      if (argv[i][1] == 'h') {
         show_help_message();
         goto exit;
       } else {
@@ -88,21 +70,24 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
         goto exit;
       }
     } else {
-      if (src_dir != NULL) {
-        printf("error: too many files.\n");
+      if (xdf_prefix == NULL) {
+        xdf_prefix = argv[i];
+        if (strlen(xdf_prefix) < 1 || strlen(xdf_prefix) > 6) {
+          show_help_message();
+          goto exit;
+        }
+      } else if (src_dir == NULL) {
+        src_dir = argv[i];
+      } else {
+        printf("error: too many arguments.\n");
         goto exit;
       }
-      src_dir = argv[i];
     }
   }
 
-  if (src_dir == NULL) {
+  if (xdf_prefix == NULL || src_dir == NULL) {
     show_help_message();
     goto exit;
-  }
-
-  if (out_dir == NULL) {
-    out_dir = src_dir;
   }
 
   // scan path 1: count candidate files
@@ -129,7 +114,7 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
     code = NFILES(&filbuf);
   } while (code >= 0);
 
-  if (total_bytes >= FD_2HD_BYTES * MAX_XDF) {
+  if (total_bytes >= FD_2HD_BYTES * XDF_MAX_DRIVES) {
     printf("error: total size is too large.\n");
     goto exit;
   }
@@ -221,7 +206,7 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
   qsort(file_splits, file_split_count, sizeof(FILE_SPLIT), (int(*)(const void*, const void*))&compare_file_split);
 
   // allocation
-  size_t xdf_sizes[ MAX_XDF ];
+  size_t xdf_sizes[ XDF_MAX_DRIVES ];
   size_t num_xdf = 1 + total_bytes / FD_2HD_BYTES;
   int16_t overflow;
   do {
@@ -241,19 +226,23 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
       if (xdf_sizes[ min_xdf ] > FD_2HD_BYTES) {
         overflow = 1;
         num_xdf++;
+        if (num_xdf > XDF_MAX_DRIVES) {
+          printf("error: XDF allocation failure.\n");
+          goto exit;
+        }
         break;
       }
     }
   } while (overflow); 
 
-  // create target directories
+  // create target XDF images
   int16_t overwrite = 0;
   for (int16_t i = 0; i < num_xdf; i++) {
-    static uint8_t xdf_dir[ MAX_PATH_LEN ];
-    sprintf(xdf_dir, "%s\\%s%02d", out_dir, base_name, i);
-    if (FILES(&filbuf, xdf_dir, 0x10) >= 0) {
+    static uint8_t xdf_path[ MAX_PATH_LEN ];
+    sprintf(xdf_path, "%s%02d.xdf", xdf_prefix, i);
+    if (FILES(&filbuf, xdf_path, 0x20) >= 0) {
       if (!overwrite) {
-        printf("warning: output directory (%s) already exists. overwrite? (y/n)", xdf_dir);
+        printf("warning: output XDF image (%s) already exists. overwrite? (y/n)", xdf_path);
         uint8_t c;
         do {
           c = INKEY();
@@ -265,14 +254,13 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
         printf("\n");
         overwrite = 1;
       }
-    } else {
-      if (MKDIR(xdf_dir) < 0) {
-        printf("error: xdf directory creation error.\n");
-        goto exit;
-      }
     }
+    if (xdf_init(&(xdf[i]), xdf_path, i) != 0)  {
+      goto exit;
+    }
+    printf("Created and formatted %s\n", xdf_path);
   }
-
+/*
   // distributed copy
   static uint8_t fread_buf[ FREAD_BUF_BYTES ];
   static uint8_t out_path_name[ MAX_PATH_LEN ];
@@ -362,12 +350,11 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
     strcat(line, "\n");
     fputs(line, fo);
   }
-
+*/
 exit:
 
-  if (fo != NULL) {
-    fclose(fo);
-    fo = NULL;
+  for (int16_t i = 0; i < XDF_MAX_DRIVES; i++) {
+    xdf_close(&(xdf[i]));
   }
 
   if (fp != NULL) {

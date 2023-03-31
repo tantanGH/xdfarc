@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 //#include <doslib.h>
 #include "ff.h"
 #include "diskio.h"
@@ -119,18 +120,27 @@ int32_t xdf_init(XDF* xdf, const uint8_t* xdf_name, uint8_t drive) {
 
   int32_t rc = -1;
 
-  xdf->fp = fopen(xdf_name, "wb");
+  strcpy(xdf->name, xdf_name);
+  xdf->written_bytes = 0;
+
+  xdf->fp = fopen(xdf->name, "wb");
   if (xdf->fp == NULL) {
-    printf("error: xdf file creation error. (%s)\n", xdf_name);
+    printf("error: xdf file creation error. (%s)\n", xdf->name);
     goto exit;
   }
   fclose(xdf->fp);
 
-  xdf->fp = fopen(xdf_name, "r+");
+  xdf->fp = fopen(xdf->name, "r+");
   if (xdf->fp == NULL) {
-    printf("error: xdf file random open error. (%s)\n", xdf_name);
+    printf("error: xdf file random open error. (%s)\n", xdf->name);
     goto exit;
   }
+  fseek(xdf->fp, XDF_SIZE, SEEK_SET);
+
+  xdf->drive = drive;
+  uint8_t drive_letter[] = "0:";
+  drive_letter[0] = '0' + xdf->drive;
+  f_mount(&xdf->fs, drive_letter, 1);   // format
 
   xdf_ptrs[ drive ] = xdf;
 
