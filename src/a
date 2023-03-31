@@ -1,0 +1,457 @@
+~/Documents/vscode-repository/xdev68k/workspace/xdfarc/src ~/Documents/vscode-repository/xdev68k/workspace/xdfarc/src
+compiling ff.c in .
+<command-line>: error: expected identifier or ‘(’ before numeric constant
+ff.h:174:3: note: in expansion of macro ‘FATFS’
+  174 | } FATFS;
+      |   ^~~~~
+<command-line>: error: expected specifier-qualifier-list before numeric constant
+ff.h:181:9: note: in expansion of macro ‘FATFS’
+  181 |         FATFS*  fs;                             /* Pointer to the hosting volume of this object */
+      |         ^~~~~
+<command-line>: error: expected declaration specifiers or ‘...’ before numeric constant
+ff.h:325:53: note: in expansion of macro ‘FATFS’
+  325 | FRESULT f_getfree (const TCHAR* path, DWORD* nclst, FATFS** fatfs);     /* Get number of free clusters on the drive */
+      |                                                     ^~~~~
+<command-line>: error: expected declaration specifiers or ‘...’ before numeric constant
+ff.h:330:18: note: in expansion of macro ‘FATFS’
+  330 | FRESULT f_mount (FATFS* fs, const TCHAR* path, BYTE opt);                       /* Mount/Unmount a logical drive */
+      |                  ^~~~~
+<command-line>: error: expected identifier or ‘(’ before numeric constant
+ff.c:464:8: note: in expansion of macro ‘FATFS’
+  464 | static FATFS *FatFs[FF_VOLUMES];        /* Pointer to the filesystem objects (logical drives) */
+      |        ^~~~~
+<command-line>: error: expected declaration specifiers or ‘...’ before numeric constant
+ff.c:1056:9: note: in expansion of macro ‘FATFS’
+ 1056 |         FATFS* fs                       /* Filesystem object */
+      |         ^~~~~
+<command-line>: error: expected declaration specifiers or ‘...’ before numeric constant
+ff.c:1078:9: note: in expansion of macro ‘FATFS’
+ 1078 |         FATFS* fs,              /* Filesystem object */
+      |         ^~~~~
+<command-line>: error: expected declaration specifiers or ‘...’ before numeric constant
+ff.c:1109:9: note: in expansion of macro ‘FATFS’
+ 1109 |         FATFS* fs               /* Filesystem object */
+      |         ^~~~~
+<command-line>: error: expected declaration specifiers or ‘...’ before numeric constant
+ff.c:1145:9: note: in expansion of macro ‘FATFS’
+ 1145 |         FATFS* fs,              /* Filesystem object */
+      |         ^~~~~
+ff.c: In function ‘get_fat’:
+ff.c:1168:16: error: ‘fs’ undeclared (first use in this function)
+ 1168 |         FATFS *fs = obj->fs;
+      |                ^~
+ff.c:1168:16: note: each undeclared identifier is reported only once for each function it appears in
+ff.c:1168:24: error: ‘FFOBJID’ has no member named ‘fs’
+ 1168 |         FATFS *fs = obj->fs;
+      |                        ^~
+ff.c:1180:29: warning: implicit declaration of function ‘move_window’ [-Wimplicit-function-declaration]
+ 1180 |                         if (move_window(fs, fs->fatbase + (bc / SS(fs))) != FR_OK) break;
+      |                             ^~~~~~~~~~~
+ff.c: At top level:
+<command-line>: error: expected declaration specifiers or ‘...’ before numeric constant
+ff.c:1240:9: note: in expansion of macro ‘FATFS’
+ 1240 |         FATFS* fs,              /* Corresponding filesystem object */
+      |         ^~~~~
+ff.c: In function ‘remove_chain’:
+ff.c:1437:16: error: ‘fs’ undeclared (first use in this function)
+ 1437 |         FATFS *fs = obj->fs;
+      |                ^~
+ff.c:1437:24: error: ‘FFOBJID’ has no member named ‘fs’
+ 1437 |         FATFS *fs = obj->fs;
+      |                        ^~
+ff.c:1448:74: error: ‘FFOBJID’ has no member named ‘stat’
+ 1448 |         if (pclst != 0 && (!FF_FS_EXFAT || fs->fs_type != FS_EXFAT || obj->stat != 2)) {
+      |                                                                          ^~
+ff.c:1449:23: warning: implicit declaration of function ‘put_fat’; did you mean ‘get_fat’? [-Wimplicit-function-declaration]
+ 1449 |                 res = put_fat(fs, pclst, 0xFFFFFFFF);
+      |                       ^~~~~~~
+      |                       get_fat
+ff.c: In function ‘create_chain’:
+ff.c:1531:16: error: ‘fs’ undeclared (first use in this function); did you mean ‘cs’?
+ 1531 |         FATFS *fs = obj->fs;
+      |                ^~
+      |                cs
+ff.c:1531:24: error: ‘FFOBJID’ has no member named ‘fs’
+ 1531 |         FATFS *fs = obj->fs;
+      |                        ^~
+ff.c: At top level:
+<command-line>: error: expected declaration specifiers or ‘...’ before numeric constant
+ff.c:1659:9: note: in expansion of macro ‘FATFS’
+ 1659 |         FATFS *fs,              /* Filesystem object */
+      |         ^~~~~
+ff.c: In function ‘dir_sdi’:
+ff.c:1703:16: error: ‘fs’ undeclared (first use in this function); did you mean ‘ofs’?
+ 1703 |         FATFS *fs = dp->obj.fs;
+      |                ^~
+      |                ofs
+ff.c:1703:28: error: ‘FFOBJID’ has no member named ‘fs’
+ 1703 |         FATFS *fs = dp->obj.fs;
+      |                            ^
+ff.c:1710:23: error: ‘FFOBJID’ has no member named ‘sclust’
+ 1710 |         clst = dp->obj.sclust;          /* Table start cluster (0:root) */
+      |                       ^
+ff.c:1713:41: error: ‘FFOBJID’ has no member named ‘stat’
+ 1713 |                 if (FF_FS_EXFAT) dp->obj.stat = 0;      /* exFAT: Root dir has an FAT chain */
+      |                                         ^
+ff.c:1728:28: warning: implicit declaration of function ‘clst2sect’ [-Wimplicit-function-declaration]
+ 1728 |                 dp->sect = clst2sect(fs, clst);
+      |                            ^~~~~~~~~
+ff.c: In function ‘dir_next’:
+ff.c:1751:16: error: ‘fs’ undeclared (first use in this function); did you mean ‘ofs’?
+ 1751 |         FATFS *fs = dp->obj.fs;
+      |                ^~
+      |                ofs
+ff.c:1751:28: error: ‘FFOBJID’ has no member named ‘fs’
+ 1751 |         FATFS *fs = dp->obj.fs;
+      |                            ^
+ff.c:1780:45: warning: implicit declaration of function ‘dir_clear’ [-Wimplicit-function-declaration]
+ 1780 |                                         if (dir_clear(fs, clst) != FR_OK) return FR_DISK_ERR;   /* Clean up the stretched table */
+      |                                             ^~~~~~~~~
+ff.c:1781:65: error: ‘FFOBJID’ has no member named ‘stat’
+ 1781 |                                         if (FF_FS_EXFAT) dp->obj.stat |= 4;                     /* exFAT: The directory has been stretched */
+      |                                                                 ^
+ff.c: In function ‘dir_alloc’:
+ff.c:1813:16: error: ‘fs’ undeclared (first use in this function)
+ 1813 |         FATFS *fs = dp->obj.fs;
+      |                ^~
+ff.c:1813:28: error: ‘FFOBJID’ has no member named ‘fs’
+ 1813 |         FATFS *fs = dp->obj.fs;
+      |                            ^
+ff.c: At top level:
+<command-line>: error: expected declaration specifiers or ‘...’ before numeric constant
+ff.c:1849:9: note: in expansion of macro ‘FATFS’
+ 1849 |         FATFS* fs,                      /* Pointer to the fs object */
+      |         ^~~~~
+<command-line>: error: expected declaration specifiers or ‘...’ before numeric constant
+ff.c:1866:9: note: in expansion of macro ‘FATFS’
+ 1866 |         FATFS* fs,      /* Pointer to the fs object */
+      |         ^~~~~
+ff.c: In function ‘dir_read’:
+ff.c:2312:16: error: ‘fs’ undeclared (first use in this function)
+ 2312 |         FATFS *fs = dp->obj.fs;
+      |                ^~
+ff.c:2312:28: error: ‘FFOBJID’ has no member named ‘fs’
+ 2312 |         FATFS *fs = dp->obj.fs;
+      |                            ^
+ff.c:2342:32: error: ‘FFOBJID’ has no member named ‘attr’
+ 2342 |                         dp->obj.attr = attr = dp->dir[DIR_Attr] & AM_MASK;      /* Get attribute */
+      |                                ^
+ff.c: In function ‘dir_find’:
+ff.c:2389:16: error: ‘fs’ undeclared (first use in this function)
+ 2389 |         FATFS *fs = dp->obj.fs;
+      |                ^~
+ff.c:2389:28: error: ‘FFOBJID’ has no member named ‘fs’
+ 2389 |         FATFS *fs = dp->obj.fs;
+      |                            ^
+ff.c:2448:24: error: ‘FFOBJID’ has no member named ‘attr’
+ 2448 |                 dp->obj.attr = dp->dir[DIR_Attr] & AM_MASK;
+      |                        ^
+ff.c: In function ‘dir_register’:
+ff.c:2470:16: error: ‘fs’ undeclared (first use in this function)
+ 2470 |         FATFS *fs = dp->obj.fs;
+      |                ^~
+ff.c:2470:28: error: ‘FFOBJID’ has no member named ‘fs’
+ 2470 |         FATFS *fs = dp->obj.fs;
+      |                            ^
+ff.c: In function ‘dir_remove’:
+ff.c:2576:16: error: ‘fs’ undeclared (first use in this function)
+ 2576 |         FATFS *fs = dp->obj.fs;
+      |                ^~
+ff.c:2576:28: error: ‘FFOBJID’ has no member named ‘fs’
+ 2576 |         FATFS *fs = dp->obj.fs;
+      |                            ^
+ff.c: In function ‘follow_path’:
+ff.c:3058:16: error: ‘fs’ undeclared (first use in this function); did you mean ‘ns’?
+ 3058 |         FATFS *fs = dp->obj.fs;
+      |                ^~
+      |                ns
+ff.c:3058:28: error: ‘FFOBJID’ has no member named ‘fs’
+ 3058 |         FATFS *fs = dp->obj.fs;
+      |                            ^
+ff.c:3068:24: error: ‘FFOBJID’ has no member named ‘sclust’
+ 3068 |                 dp->obj.sclust = 0;                                     /* Start from the root directory */
+      |                        ^
+ff.c:3111:38: error: ‘FFOBJID’ has no member named ‘attr’
+ 3111 |                         if (!(dp->obj.attr & AM_DIR)) { /* It is not a sub-directory and cannot follow */
+      |                                      ^
+ff.c:3123:40: error: ‘FFOBJID’ has no member named ‘sclust’
+ 3123 |                                 dp->obj.sclust = ld_clust(fs, fs->win + dp->dptr % SS(fs));     /* Open next directory */
+      |                                        ^
+ff.c:3123:50: warning: implicit declaration of function ‘ld_clust’ [-Wimplicit-function-declaration]
+ 3123 |                                 dp->obj.sclust = ld_clust(fs, fs->win + dp->dptr % SS(fs));     /* Open next directory */
+      |                                                  ^~~~~~~~
+ff.c: At top level:
+<command-line>: error: expected declaration specifiers or ‘...’ before numeric constant
+ff.c:3292:9: note: in expansion of macro ‘FATFS’
+ 3292 |         FATFS* fs,                      /* Filesystem object */
+      |         ^~~~~
+<command-line>: error: expected declaration specifiers or ‘...’ before numeric constant
+ff.c:3332:9: note: in expansion of macro ‘FATFS’
+ 3332 |         FATFS* fs,              /* Filesystem object */
+      |         ^~~~~
+<command-line>: error: expected declaration specifiers or ‘...’ before numeric constant
+ff.c:3387:9: note: in expansion of macro ‘FATFS’
+ 3387 |         FATFS** rfs,                            /* Pointer to pointer to the found filesystem object */
+      |         ^~~~~
+<command-line>: error: expected declaration specifiers or ‘...’ before numeric constant
+ff.c:3615:9: note: in expansion of macro ‘FATFS’
+ 3615 |         FATFS** rfs                             /* Pointer to pointer to the owner filesystem object to return */
+      |         ^~~~~
+<command-line>: error: expected declaration specifiers or ‘...’ before numeric constant
+ff.c:3658:9: note: in expansion of macro ‘FATFS’
+ 3658 |         FATFS* fs,                      /* Pointer to the filesystem object to be registered (NULL:unmount)*/
+      |         ^~~~~
+ff.c: In function ‘f_open’:
+ff.c:3725:16: error: ‘fs’ undeclared (first use in this function); did you mean ‘fp’?
+ 3725 |         FATFS *fs;
+      |                ^~
+      |                fp
+ff.c:3738:15: warning: implicit declaration of function ‘mount_volume’ [-Wimplicit-function-declaration]
+ 3738 |         res = mount_volume(&path, &fs, mode);
+      |               ^~~~~~~~~~~~
+ff.c:3740:23: error: ‘FFOBJID’ has no member named ‘fs’
+ 3740 |                 dj.obj.fs = fs;
+      |                       ^
+ff.c:3767:43: error: ‘FFOBJID’ has no member named ‘attr’
+ 3767 |                                 if (dj.obj.attr & (AM_RDO | AM_DIR)) {  /* Cannot overwrite it (R/O or DIR) */
+      |                                           ^
+ff.c:3799:41: warning: implicit declaration of function ‘st_clust’ [-Wimplicit-function-declaration]
+ 3799 |                                         st_clust(fs, dj.dir, 0);                        /* Reset file allocation info */
+      |                                         ^~~~~~~~
+ff.c:3815:43: error: ‘FFOBJID’ has no member named ‘attr’
+ 3815 |                                 if (dj.obj.attr & AM_DIR) {             /* File open against a directory */
+      |                                           ^
+ff.c:3818:73: error: ‘FFOBJID’ has no member named ‘attr’
+ 3818 |                                         if ((mode & FA_WRITE) && (dj.obj.attr & AM_RDO)) { /* Write mode open against R/O file */
+      |                                                                         ^
+ff.c:3855:40: error: ‘FFOBJID’ has no member named ‘sclust’
+ 3855 |                                 fp->obj.sclust = ld_clust(fs, dj.dir);                                  /* Get object allocation info */
+      |                                        ^
+ff.c:3856:40: error: ‘FFOBJID’ has no member named ‘objsize’
+ 3856 |                                 fp->obj.objsize = ld_dword(dj.dir + DIR_FileSize);
+      |                                        ^
+ff.c:3861:32: error: ‘FFOBJID’ has no member named ‘fs’
+ 3861 |                         fp->obj.fs = fs;        /* Validate the file object */
+      |                                ^
+ff.c:3862:32: error: ‘FFOBJID’ has no member named ‘id’
+ 3862 |                         fp->obj.id = fs->id;
+      |                                ^
+ff.c:3871:59: error: ‘FFOBJID’ has no member named ‘objsize’
+ 3871 |                         if ((mode & FA_SEEKEND) && fp->obj.objsize > 0) {       /* Seek to end of file if FA_OPEN_APPEND is specified */
+      |                                                           ^
+ff.c:3872:51: error: ‘FFOBJID’ has no member named ‘objsize’
+ 3872 |                                 fp->fptr = fp->obj.objsize;                     /* Offset to seek */
+      |                                                   ^
+ff.c:3874:47: error: ‘FFOBJID’ has no member named ‘sclust’
+ 3874 |                                 clst = fp->obj.sclust;                          /* Follow the cluster chain */
+      |                                               ^
+ff.c:3875:51: error: ‘FFOBJID’ has no member named ‘objsize’
+ 3875 |                                 for (ofs = fp->obj.objsize; res == FR_OK && ofs > bcs; ofs -= bcs) {
+      |                                                   ^
+ff.c:3902:34: error: ‘FFOBJID’ has no member named ‘fs’
+ 3902 |         if (res != FR_OK) fp->obj.fs = 0;       /* Invalidate file object on error */
+      |                                  ^
+ff.c: In function ‘f_read’:
+ff.c:3922:16: error: ‘fs’ undeclared (first use in this function); did you mean ‘fp’?
+ 3922 |         FATFS *fs;
+      |                ^~
+      |                fp
+ff.c:3931:15: warning: implicit declaration of function ‘validate’ [-Wimplicit-function-declaration]
+ 3931 |         res = validate(&fp->obj, &fs);                          /* Check validity of the file object */
+      |               ^~~~~~~~
+ff.c:3934:25: error: ‘FFOBJID’ has no member named ‘objsize’
+ 3934 |         remain = fp->obj.objsize - fp->fptr;
+      |                         ^
+ff.c:3942:55: error: ‘FFOBJID’ has no member named ‘sclust’
+ 3942 |                                         clst = fp->obj.sclust;          /* Follow cluster chain from the origin */
+      |                                                       ^
+ff.c: In function ‘f_write’:
+ff.c:4022:16: error: ‘fs’ undeclared (first use in this function); did you mean ‘fp’?
+ 4022 |         FATFS *fs;
+      |                ^~
+      |                fp
+ff.c:4039:92: error: ‘FFOBJID’ has no member named ‘objsize’
+ 4039 |         for ( ; btw > 0; btw -= wcnt, *bw += wcnt, wbuff += wcnt, fp->fptr += wcnt, fp->obj.objsize = (fp->fptr > fp->obj.objsize) ? fp->fptr : fp->obj.objsize) {      /* Repeat until all data written */
+      |                                                                                            ^
+ff.c:4039:122: error: ‘FFOBJID’ has no member named ‘objsize’
+ 4039 |         for ( ; btw > 0; btw -= wcnt, *bw += wcnt, wbuff += wcnt, fp->fptr += wcnt, fp->obj.objsize = (fp->fptr > fp->obj.objsize) ? fp->fptr : fp->obj.objsize) {      /* Repeat until all data written */
+      |                                                                                                                          ^
+ff.c:4039:152: error: ‘FFOBJID’ has no member named ‘objsize’
+ 4039 |         for ( ; btw > 0; btw -= wcnt, *bw += wcnt, wbuff += wcnt, fp->fptr += wcnt, fp->obj.objsize = (fp->fptr > fp->obj.objsize) ? fp->fptr : fp->obj.objsize) {      /* Repeat until all data written */
+      |                                                                                                                                                        ^
+ff.c:4044:55: error: ‘FFOBJID’ has no member named ‘sclust’
+ 4044 |                                         clst = fp->obj.sclust;  /* Follow from the origin */
+      |                                                       ^
+ff.c:4062:44: error: ‘FFOBJID’ has no member named ‘sclust’
+ 4062 |                                 if (fp->obj.sclust == 0) fp->obj.sclust = clst; /* Set start cluster if the first write */
+      |                                            ^
+ff.c:4062:65: error: ‘FFOBJID’ has no member named ‘sclust’
+ 4062 |                                 if (fp->obj.sclust == 0) fp->obj.sclust = clst; /* Set start cluster if the first write */
+      |                                                                 ^
+ff.c:4104:51: error: ‘FFOBJID’ has no member named ‘objsize’
+ 4104 |                                 fp->fptr < fp->obj.objsize &&
+      |                                                   ^
+ff.c: In function ‘f_sync’:
+ff.c:4140:16: error: ‘fs’ undeclared (first use in this function); did you mean ‘fp’?
+ 4140 |         FATFS *fs;
+      |                ^~
+      |                fp
+ff.c:4192:57: error: ‘FFOBJID’ has no member named ‘fs’
+ 4192 |                                         st_clust(fp->obj.fs, dir, fp->obj.sclust);              /* Update file allocation information  */
+      |                                                         ^
+ff.c:4192:74: error: ‘FFOBJID’ has no member named ‘sclust’
+ 4192 |                                         st_clust(fp->obj.fs, dir, fp->obj.sclust);              /* Update file allocation information  */
+      |                                                                          ^
+ff.c:4193:84: error: ‘FFOBJID’ has no member named ‘objsize’
+ 4193 |                                         st_dword(dir + DIR_FileSize, (DWORD)fp->obj.objsize);   /* Update file size */
+      |                                                                                    ^
+ff.c:4197:47: warning: implicit declaration of function ‘sync_fs’ [-Wimplicit-function-declaration]
+ 4197 |                                         res = sync_fs(fs);                                      /* Restore it to the directory */
+      |                                               ^~~~~~~
+ff.c: In function ‘f_close’:
+ff.c:4221:16: error: ‘fs’ undeclared (first use in this function); did you mean ‘fp’?
+ 4221 |         FATFS *fs;
+      |                ^~
+      |                fp
+ff.c:4234:32: error: ‘FFOBJID’ has no member named ‘fs’
+ 4234 |                         fp->obj.fs = 0; /* Invalidate file object */
+      |                                ^
+ff.c: In function ‘f_lseek’:
+ff.c:4439:16: error: ‘fs’ undeclared (first use in this function); did you mean ‘ofs’?
+ 4439 |         FATFS *fs;
+      |                ^~
+      |                ofs
+ff.c:4515:34: error: ‘FFOBJID’ has no member named ‘objsize’
+ 4515 |                 if (ofs > fp->obj.objsize && (FF_FS_READONLY || !(fp->flag & FA_WRITE))) {      /* In read-only mode, clip offset with the file size */
+      |                                  ^
+ff.c:4516:38: error: ‘FFOBJID’ has no member named ‘objsize’
+ 4516 |                         ofs = fp->obj.objsize;
+      |                                      ^
+ff.c:4528:47: error: ‘FFOBJID’ has no member named ‘sclust’
+ 4528 |                                 clst = fp->obj.sclust;                                  /* start from the first cluster */
+      |                                               ^
+ff.c:4534:48: error: ‘FFOBJID’ has no member named ‘sclust’
+ 4534 |                                         fp->obj.sclust = clst;
+      |                                                ^
+ff.c:4544:86: error: ‘FFOBJID’ has no member named ‘objsize’
+ 4544 |                                                 if (FF_FS_EXFAT && fp->fptr > fp->obj.objsize) {        /* No FAT chain object needs correct objsize to generate FAT value */
+      |                                                                                      ^
+ff.c:4545:64: error: ‘FFOBJID’ has no member named ‘objsize’
+ 4545 |                                                         fp->obj.objsize = fp->fptr;
+      |                                                                ^
+ff.c:4569:58: error: ‘FFOBJID’ has no member named ‘objsize’
+ 4569 |                 if (!FF_FS_READONLY && fp->fptr > fp->obj.objsize) {    /* Set file change flag if the file size is extended */
+      |                                                          ^
+ff.c:4570:32: error: ‘FFOBJID’ has no member named ‘objsize’
+ 4570 |                         fp->obj.objsize = fp->fptr;
+      |                                ^
+ff.c: In function ‘f_opendir’:
+ff.c:4603:16: error: ‘fs’ undeclared (first use in this function)
+ 4603 |         FATFS *fs;
+      |                ^~
+ff.c:4612:24: error: ‘FFOBJID’ has no member named ‘fs’
+ 4612 |                 dp->obj.fs = fs;
+      |                        ^
+ff.c:4617:44: error: ‘FFOBJID’ has no member named ‘attr’
+ 4617 |                                 if (dp->obj.attr & AM_DIR) {            /* This object is a sub-directory */
+      |                                            ^
+ff.c:4627:56: error: ‘FFOBJID’ has no member named ‘sclust’
+ 4627 |                                                 dp->obj.sclust = ld_clust(fs, dp->dir); /* Get object allocation info */
+      |                                                        ^
+ff.c:4634:40: error: ‘FFOBJID’ has no member named ‘id’
+ 4634 |                                 dp->obj.id = fs->id;
+      |                                        ^
+ff.c:4651:34: error: ‘FFOBJID’ has no member named ‘fs’
+ 4651 |         if (res != FR_OK) dp->obj.fs = 0;               /* Invalidate the directory object if function failed */
+      |                                  ^
+ff.c: In function ‘f_closedir’:
+ff.c:4668:16: error: ‘fs’ undeclared (first use in this function)
+ 4668 |         FATFS *fs;
+      |                ^~
+ff.c:4677:24: error: ‘FFOBJID’ has no member named ‘fs’
+ 4677 |                 dp->obj.fs = 0; /* Invalidate directory object */
+      |                        ^
+ff.c: In function ‘f_readdir’:
+ff.c:4699:16: error: ‘fs’ undeclared (first use in this function)
+ 4699 |         FATFS *fs;
+      |                ^~
+ff.c: In function ‘f_stat’:
+ff.c:4792:42: error: ‘FFOBJID’ has no member named ‘fs’
+ 4792 |         res = mount_volume(&path, &dj.obj.fs, 0);
+      |                                          ^
+ff.c: At top level:
+<command-line>: error: expected declaration specifiers or ‘...’ before numeric constant
+ff.c:4819:9: note: in expansion of macro ‘FATFS’
+ 4819 |         FATFS** fatfs           /* Pointer to return pointer to corresponding filesystem object */
+      |         ^~~~~
+ff.c: In function ‘f_truncate’:
+ff.c:4917:16: error: ‘fs’ undeclared (first use in this function); did you mean ‘fp’?
+ 4917 |         FATFS *fs;
+      |                ^~
+      |                fp
+ff.c:4925:31: error: ‘FFOBJID’ has no member named ‘objsize’
+ 4925 |         if (fp->fptr < fp->obj.objsize) {       /* Process when fptr is not on the eof */
+      |                               ^
+ff.c:4927:61: error: ‘FFOBJID’ has no member named ‘sclust’
+ 4927 |                         res = remove_chain(&fp->obj, fp->obj.sclust, 0);
+      |                                                             ^
+ff.c:4928:32: error: ‘FFOBJID’ has no member named ‘sclust’
+ 4928 |                         fp->obj.sclust = 0;
+      |                                ^
+ff.c:4938:24: error: ‘FFOBJID’ has no member named ‘objsize’
+ 4938 |                 fp->obj.objsize = fp->fptr;     /* Set file size to current read/write point */
+      |                        ^
+ff.c: In function ‘f_unlink’:
+ff.c:4967:16: error: ‘fs’ undeclared (first use in this function)
+ 4967 |         FATFS *fs;
+      |                ^~
+ff.c:4979:23: error: ‘FFOBJID’ has no member named ‘fs’
+ 4979 |                 dj.obj.fs = fs;
+      |                       ^
+ff.c:4992:43: error: ‘FFOBJID’ has no member named ‘attr’
+ 4992 |                                 if (dj.obj.attr & AM_RDO) {
+      |                                           ^
+ff.c:5007:43: error: ‘FFOBJID’ has no member named ‘attr’
+ 5007 |                                 if (dj.obj.attr & AM_DIR) {                     /* Is it a sub-directory? */
+      |                                           ^
+ff.c:5014:56: error: ‘FFOBJID’ has no member named ‘fs’
+ 5014 |                                                 sdj.obj.fs = fs;                        /* Open the sub-directory */
+      |                                                        ^
+ff.c:5015:56: error: ‘FFOBJID’ has no member named ‘sclust’
+ 5015 |                                                 sdj.obj.sclust = dclst;
+      |                                                        ^
+ff.c: In function ‘f_mkdir’:
+ff.c:5061:16: error: ‘fs’ undeclared (first use in this function)
+ 5061 |         FATFS *fs;
+      |                ^~
+ff.c:5070:23: error: ‘FFOBJID’ has no member named ‘fs’
+ 5070 |                 dj.obj.fs = fs;
+      |                       ^
+ff.c:5078:29: error: ‘FFOBJID’ has no member named ‘fs’
+ 5078 |                         sobj.fs = fs;                                           /* New object id to create a new chain */
+      |                             ^
+ff.c:5095:88: error: ‘FFOBJID’ has no member named ‘sclust’
+ 5095 |                                                 fs->win[SZDIRE + 1] = '.'; pcl = dj.obj.sclust;
+      |                                                                                        ^
+ff.c: In function ‘f_rename’:
+ff.c:5146:16: error: ‘fs’ undeclared (first use in this function)
+ 5146 |         FATFS *fs;
+      |                ^~
+ff.c:5156:24: error: ‘FFOBJID’ has no member named ‘fs’
+ 5156 |                 djo.obj.fs = fs;
+      |                        ^
+ff.c:5197:55: error: ‘FFOBJID’ has no member named ‘sclust’
+ 5197 |                                         res = (djn.obj.sclust == djo.obj.sclust && djn.dptr == djo.dptr) ? FR_NO_FILE : FR_EXIST;
+      |                                                       ^
+ff.c:5197:73: error: ‘FFOBJID’ has no member named ‘sclust’
+ 5197 |                                         res = (djn.obj.sclust == djo.obj.sclust && djn.dptr == djo.dptr) ? FR_NO_FILE : FR_EXIST;
+      |                                                                         ^
+ff.c:5207:88: error: ‘FFOBJID’ has no member named ‘sclust’
+ 5207 |                                                 if ((dir[DIR_Attr] & AM_DIR) && djo.obj.sclust != djn.obj.sclust) {     /* Update .. entry in the sub-directory if needed */
+      |                                                                                        ^
+ff.c:5207:106: error: ‘FFOBJID’ has no member named ‘sclust’
+ 5207 |                                                 if ((dir[DIR_Attr] & AM_DIR) && djo.obj.sclust != djn.obj.sclust) {     /* Update .. entry in the sub-directory if needed */
+      |                                                                                                          ^
+ff.c:5216:98: error: ‘FFOBJID’ has no member named ‘sclust’
+ 5216 |                                                                         st_clust(fs, dir, djn.obj.sclust);
+      |                                                                                                  ^
