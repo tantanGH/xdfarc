@@ -47,8 +47,11 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
   FILE_SPLIT* file_splits = NULL;
 
   // XDF handlers
-  XDF xdf[ XDF_MAX_DRIVES ];
+  static XDF xdf[ XDF_MAX_DRIVES ];
   memset(xdf, 0, sizeof(XDF) * XDF_MAX_DRIVES);
+
+  // num of XDF
+  int16_t num_xdf = 0;
 
   // credit
   printf("XDFARC.X - XDF format file archiver for X680x0 " VERSION " by tantan\n");
@@ -107,7 +110,7 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
   size_t total_bytes = 0;
   do {
     file_count++;
-    if (filbuf.name[0] != '.') {
+    if (filbuf.name[0] != '.' && !(strlen(filbuf.name) >= 5 && stricmp(filbuf.name + strlen(filbuf.name) - 4, ".xdf") == 0)) {
       file_split_count += ( 1 + filbuf.filelen / FD_2HD_BYTES );
       total_bytes += filbuf.filelen;
     }
@@ -129,7 +132,7 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
     goto exit;
   }
 
-  if (filbuf.name[0] != '.') {
+  if (filbuf.name[0] != '.' && !(strlen(filbuf.name) >= 5 && stricmp(filbuf.name + strlen(filbuf.name) - 4, ".xdf") == 0)) {
     if (filbuf.filelen > FD_2HD_BYTES) {
       int32_t len = filbuf.filelen;
       int16_t chunk = 1;
@@ -167,6 +170,7 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
   for (int16_t i = 1; i < file_count; i++) {
     NFILES(&filbuf);
     if (filbuf.name[0] == '.') continue;
+    if (strlen(filbuf.name) >= 5 && stricmp(filbuf.name + strlen(filbuf.name) - 4, ".xdf") == 0) continue;
     if (filbuf.filelen > FD_2HD_BYTES) {
       int32_t len = filbuf.filelen;
       int16_t chunk = 1;
@@ -207,8 +211,8 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
 
   // allocation
   size_t xdf_sizes[ XDF_MAX_DRIVES ];
-  size_t num_xdf = 1 + total_bytes / FD_2HD_BYTES;
   int16_t overflow;
+  num_xdf = 1 + total_bytes / FD_2HD_BYTES;
   do {
     overflow = 0;
     memset(xdf_sizes, 0, sizeof(size_t) * num_xdf);
@@ -353,7 +357,7 @@ int32_t main(int32_t argc, uint8_t* argv[]) {
 */
 exit:
 
-  for (int16_t i = 0; i < XDF_MAX_DRIVES; i++) {
+  for (int16_t i = 0; i < num_xdf; i++) {
     xdf_close(&(xdf[i]));
   }
 

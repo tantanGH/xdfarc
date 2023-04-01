@@ -30,7 +30,7 @@
 /  f_findnext(). (0:Disable, 1:Enable 2:Enable with matching altname[] too) */
 
 
-#define FF_USE_MKFS		0
+#define FF_USE_MKFS		1
 /* This option switches f_mkfs() function. (0:Disable or 1:Enable) */
 
 
@@ -56,9 +56,9 @@
 /* This option switches f_forward() function. (0:Disable or 1:Enable) */
 
 
-#define FF_USE_STRFUNC	0
+#define FF_USE_STRFUNC	1
 #define FF_PRINT_LLI	1
-#define FF_PRINT_FLOAT	1
+#define FF_PRINT_FLOAT	0
 #define FF_STRF_ENCODE	3
 /* FF_USE_STRFUNC switches string functions, f_gets(), f_putc(), f_puts() and
 /  f_printf().
@@ -166,7 +166,7 @@
 / Drive/Volume Configurations
 /---------------------------------------------------------------------------*/
 
-#define FF_VOLUMES		1
+#define FF_VOLUMES		10
 /* Number of volumes (logical drives) to be used. (1-10) */
 
 

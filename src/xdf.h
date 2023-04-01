@@ -9,7 +9,7 @@
 
 #define XDF_SIZE (1261568)  // 1024 * 8 * 77 * 2
 
-#define XDF_MAX_DRIVES (16)
+#define XDF_MAX_DRIVES (10)
 
 #define SECTOR_SIZE (512)
 
@@ -18,6 +18,8 @@ typedef struct {
   FILE* fp;
   size_t written_bytes;
   uint8_t drive;
+  uint8_t drive_letter[8];
+  uint8_t ff_work[ FF_MAX_SS ];
   FATFS fs;
 } XDF;
 

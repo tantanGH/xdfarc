@@ -47,21 +47,23 @@ typedef unsigned __int64 QWORD;
 #define FF_INTDEF 2
 #include <stdint.h>
 typedef unsigned int	UINT;	/* int must be 16-bit or 32-bit */
-typedef unsigned char	BYTE;	/* char must be 8-bit */
-typedef uint16_t		WORD;	/* 16-bit unsigned integer */
+typedef unsigned char	UBYTE;	/* char must be 8-bit */
+typedef uint16_t		UWORD;	/* 16-bit unsigned integer */
 typedef uint32_t		DWORD;	/* 32-bit unsigned integer */
 typedef uint64_t		QWORD;	/* 64-bit unsigned integer */
-typedef WORD			WCHAR;	/* UTF-16 character type */
+typedef UWORD			WCHAR;	/* UTF-16 character type */
 
 #else  	/* Earlier than C99 */
 #define FF_INTDEF 1
 typedef unsigned int	UINT;	/* int must be 16-bit or 32-bit */
-typedef unsigned char	BYTE;	/* char must be 8-bit */
-typedef unsigned short	WORD;	/* 16-bit unsigned integer */
+typedef unsigned char	UBYTE;	/* char must be 8-bit */
+typedef unsigned short UWORD;	/* 16-bit unsigned integer */
 typedef unsigned long	DWORD;	/* 32-bit unsigned integer */
-typedef WORD			WCHAR;	/* UTF-16 character type */
+typedef UWORD			WCHAR;	/* UTF-16 character type */
 #endif
 
+#define BYTE UBYTE
+#define WORD UWORD
 
 /* Type of file size and LBA variables */
 
@@ -125,10 +127,7 @@ extern const char* VolumeStr[FF_VOLUMES];	/* User defied volume ID */
 #endif
 #endif
 
-
-
 /* Filesystem object structure (FATFS) */
-
 typedef struct {
 	BYTE	fs_type;		/* Filesystem type (0:not mounted) */
 	BYTE	pdrv;			/* Volume hosting physical drive */
@@ -172,8 +171,6 @@ typedef struct {
 	LBA_t	winsect;		/* Current sector appearing in the win[] */
 	BYTE	win[FF_MAX_SS];	/* Disk access window for Directory, FAT (and file data at tiny cfg) */
 } FATFS;
-
-
 
 /* Object ID and allocation information (FFOBJID) */
 
