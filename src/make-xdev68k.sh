@@ -55,7 +55,7 @@ function do_compile() {
 }
 
 function build_xdfarc() {
-  do_compile . "ff ffsystem xdf main"
+  do_compile . "xdf main"
   if [ $? != 0 ]; then
     return $?
   fi
