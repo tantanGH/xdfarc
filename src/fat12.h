@@ -52,7 +52,7 @@ int32_t fat12_find_free_clusters(FAT12* fat, int16_t num_clusters, int16_t* clus
 void fat12_create_dir_entry(FAT12* fat, FAT12_DIR_ENTRY* dir_ent, uint8_t* file_name, uint8_t attr, uint16_t file_date, uint16_t file_time, uint32_t file_size, int16_t first_cluster);
 
 int32_t fat12_add_root_dir_entry(FAT12* fat, FAT12_DIR_ENTRY* dir_ent);
-int32_t fat12_add_dir_entry(FAT12* fat, FAT12_DIR_ENTRY* current_dir, FAT12_DIR_ENTRY* dir_ent);
+int32_t fat12_add_dir_entry(FAT12* fat, int16_t current_dir_cluster, FAT12_DIR_ENTRY* dir_ent);
 
 int32_t fat12_read_cluster(FAT12* fat, int16_t cluster, uint8_t* buf);
 int32_t fat12_write_cluster(FAT12* fat, int16_t cluster, uint8_t* buf);

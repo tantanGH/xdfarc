@@ -11,7 +11,7 @@
 //
 //  add directory recursively
 //
-static int32_t add_dir(FAT12* fat, uint8_t* dir_name, FAT12_DIR_ENTRY* current_dir_ent, int16_t sort_entries, size_t* resume_marker) {
+static int32_t add_dir(FAT12* fat, uint8_t* dir_name, int16_t current_dir_cluster, int16_t sort_entries, size_t* resume_marker) {
 
   // default return code
   int32_t rc = -1;
@@ -19,14 +19,11 @@ static int32_t add_dir(FAT12* fat, uint8_t* dir_name, FAT12_DIR_ENTRY* current_d
   // file read handle
   FILE* fp = NULL;
 
-  // allocated cluster ID array
-  static int16_t clusters[ FAT12_NUM_ALLOCATIONS ];
-
   // file data read buffer
   static uint8_t read_buf[ XDF_SECTOR_BYTES ];
 
-
-
+  // allocated cluster ID array
+  static int16_t clusters[ FAT12_NUM_ALLOCATIONS ];
 
   // dir name + wild card for directory scan
   uint8_t wild_name[ MAX_PATH_LEN ];
@@ -41,7 +38,7 @@ static int32_t add_dir(FAT12* fat, uint8_t* dir_name, FAT12_DIR_ENTRY* current_d
   // scan directory
   struct FILBUF filbuf = { 0 };
   if (FILES(&filbuf, wild_name, 0x31) < 0) {    // read only + file + dir
-    if (current_dir_ent == NULL) {
+    if (current_dir_cluster == 0) {
       printf("error: found no file. (%s)\n", wild_name);    // show message at root dir only
     }
     goto exit;
@@ -50,14 +47,10 @@ static int32_t add_dir(FAT12* fat, uint8_t* dir_name, FAT12_DIR_ENTRY* current_d
   do {
 
     // full path name
-    uint8_t path_name [ MAX_PATH_LEN ];
+    uint8_t path_name[ MAX_PATH_LEN ];
     strcpy(path_name, wild_name);
     path_name[ strlen(path_name) - 3 ] = '\0';
     strcat(path_name, filbuf.name);                 // replace last *.* with real file name
-
-    // parent/sub dir entry for dir
-    FAT12_DIR_ENTRY parent_dir_ent = { 0 };
-    FAT12_DIR_ENTRY sub_dir_ent = { 0 };
 
     if (filbuf.atr & FAT12_DIR_ATTR_DIRECTORY) {
 
@@ -80,8 +73,11 @@ static int32_t add_dir(FAT12* fat, uint8_t* dir_name, FAT12_DIR_ENTRY* current_d
       int16_t found = fat12_find_free_clusters(fat, num_clusters, clusters);
       if (found < num_clusters) {
         printf("%-24s ... disk full!!\n", path_name);
+        rc = 1;
         goto next;        
       }
+
+      // write empty directory table to XDF
       for (int16_t i = 0; i < num_clusters; i++) {
         memset(read_buf, 0, XDF_SECTOR_BYTES);
         if (fat12_write_cluster(fat, clusters[i], read_buf) != 0) {
@@ -90,7 +86,16 @@ static int32_t add_dir(FAT12* fat, uint8_t* dir_name, FAT12_DIR_ENTRY* current_d
         }
         fat12_set_allocation(fat, clusters[i], i < ( num_clusters - 1 ) ? clusters[ i + 1 ] : FAT12_EOC);
       }
-      filbuf.filelen = 0;
+
+      // '.'
+      FAT12_DIR_ENTRY sub_dir_ent = { 0 };
+      fat12_create_dir_entry(fat, &sub_dir_ent, ".", FAT12_DIR_ATTR_DIRECTORY, 0, 0, 0, clusters[0]);
+      fat12_add_dir_entry(fat, clusters[0], &sub_dir_ent);   
+
+      // '..'
+      FAT12_DIR_ENTRY parent_dir_ent = { 0 };
+      fat12_create_dir_entry(fat, &parent_dir_ent, "..", FAT12_DIR_ATTR_DIRECTORY, 0, 0, 0, current_dir_cluster);
+      fat12_add_dir_entry(fat, clusters[0], &parent_dir_ent); 
 
     } else {
 
@@ -131,21 +136,23 @@ static int32_t add_dir(FAT12* fat, uint8_t* dir_name, FAT12_DIR_ENTRY* current_d
 
     FAT12_DIR_ENTRY ent = { 0 };
     fat12_create_dir_entry(fat, &ent, filbuf.name, filbuf.atr, filbuf.date, filbuf.time, filbuf.filelen, clusters[0]);
-    if (current_dir_ent == NULL) {
+    if (current_dir_cluster == 0) {
       if (fat12_add_root_dir_entry(fat, &ent) != 0) {
         printf("error: too many files in the root directory.\n");
         goto exit;
       }
     } else {
-      if (fat12_add_dir_entry(fat, current_dir_ent, &ent) != 0) {
+      if (fat12_add_dir_entry(fat, current_dir_cluster, &ent) != 0) {
         printf("error: too many files in the root directory.\n");
         goto exit;
       }
     }
-    
+
+    resume_marker++;
+
     if (filbuf.atr & FAT12_DIR_ATTR_DIRECTORY) {
       printf("%-24s ... added (directory)\n", path_name);
-      add_dir(fat, path_name, &sub_dir_ent, sort_entries, resume_marker);
+      add_dir(fat, path_name, clusters[0], sort_entries, resume_marker);
     } else {
       printf("%-24s ... added (%6d bytes)\n", path_name, filbuf.filelen);        
     }
@@ -258,7 +265,7 @@ loop:
   }
 
   // add files and dirs
-  rc = add_dir(&fat, (dir_name == NULL || strcmp(dir_name, ".") == 0) ? (uint8_t*)"" : dir_name, NULL, sort_entries, &resume_marker);
+  rc = add_dir(&fat, (dir_name == NULL || strcmp(dir_name, ".") == 0) ? (uint8_t*)"" : dir_name, 0, sort_entries, &resume_marker);
 
   if (rc == 0) {
     printf("done.\n");

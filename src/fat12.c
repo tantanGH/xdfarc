@@ -146,23 +146,22 @@ int32_t fat12_add_root_dir_entry(FAT12* fat, FAT12_DIR_ENTRY* dir_ent) {
   return rc;
 }
 
-int32_t fat12_add_dir_entry(FAT12* fat, FAT12_DIR_ENTRY* current_dir_ent, FAT12_DIR_ENTRY* dir_ent) {
+int32_t fat12_add_dir_entry(FAT12* fat, int16_t current_dir_cluster, FAT12_DIR_ENTRY* dir_ent) {
 
   int32_t rc = -1;
 
   uint8_t* e = NULL;
 
-  static uint8_t current_dir[ XDF_SECTOR_BYTES ];
-  int16_t current_dir_cluster = current_dir_ent->fst_clus_lo;
+  static uint8_t dir_table[ XDF_SECTOR_BYTES ];
 
   do {
 
-    fat12_read_cluster(fat, current_dir_cluster, current_dir);
+    fat12_read_cluster(fat, current_dir_cluster, dir_table);
 
     for (int16_t i = 0; i < 32; i++) {
-      uint8_t p = current_dir[ 32 * i ];
+      uint8_t p = dir_table[ 32 * i ];
       if (p == 0x00 || p == 0xe5) {
-        e = current_dir + 32 * i;
+        e = dir_table + 32 * i;
         break;
       }
     }
@@ -189,6 +188,9 @@ int32_t fat12_add_dir_entry(FAT12* fat, FAT12_DIR_ENTRY* current_dir_ent, FAT12_
     e[29] = (dir_ent->file_size >> 8) & 0xff;
     e[30] = (dir_ent->file_size >> 16) & 0xff;
     e[31] = (dir_ent->file_size >> 24) & 0xff;
+
+    fat12_write_cluster(fat, current_dir_cluster, dir_table);
+
     rc = 0;
   }
 
