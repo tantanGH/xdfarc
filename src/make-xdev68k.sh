@@ -18,7 +18,7 @@ HLK=${XDEV68K_DIR}/x68k_bin/hlk301.x
 HLK_LINK_LIST=_lk_list.tmp
 
 INCLUDE_FLAGS="-I${XDEV68K_DIR}/include/xc -I${XDEV68K_DIR}/include/xdev68k"
-COMMON_FLAGS="-m68000 -Os -DXDEV68K ${INCLUDE_FLAGS}"
+COMMON_FLAGS="-m68000 -Os -DXDEV68K ${INCLUDE_FLAGS} -z-stack=32768"
 CFLAGS="${COMMON_FLAGS} -Wno-builtin-declaration-mismatch -fcall-used-d2 -fcall-used-a2 \
     -fexec-charset=cp932 -fverbose-asm -fno-defer-pop -D_TIME_T_DECLARED -D_CLOCK_T_DECLARED -Dwint_t=int"
 
@@ -55,7 +55,7 @@ function do_compile() {
 }
 
 function build_xdfarc() {
-  do_compile . "xdf main"
+  do_compile . "xdf fat12 main"
   if [ $? != 0 ]; then
     return $?
   fi
