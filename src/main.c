@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdint.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+#include <jstring.h>
 #include <doslib.h>
 #include <iocslib.h>
 #include "fat12.h"
@@ -9,9 +10,9 @@
 #include "xdfarc.h"
 
 //
-//  add directory recursively
+//  add files recursively
 //
-static int32_t add_dir(FAT12* fat, uint8_t* dir_name, int16_t current_dir_cluster, int16_t sort_entries, size_t* resume_marker) {
+static int32_t add_files(FAT12* fat, uint8_t* file_pattern, int16_t current_dir_cluster, int16_t sort_entries, size_t* resume_marker) {
 
   // default return code
   int32_t rc = -1;
@@ -26,43 +27,64 @@ static int32_t add_dir(FAT12* fat, uint8_t* dir_name, int16_t current_dir_cluste
   static int16_t clusters[ FAT12_NUM_ALLOCATIONS ];
 
   // dir name + wild card for directory scan
-  uint8_t wild_name[ MAX_PATH_LEN ];
-  strcpy(wild_name, dir_name);
-  uint8_t wild_name_suffix = strlen(wild_name) > 0 ? wild_name[ strlen(wild_name) - 1 ] : '\0';
-  if (wild_name_suffix != '\0' && wild_name_suffix != ':' && wild_name_suffix != '\\' && wild_name_suffix != '/') {
-    strcat(wild_name, "\\*.*");
-  } else {
-    strcat(wild_name, "*.*");
-  }
+//  uint8_t wild_name[ MAX_PATH_LEN ];
+//  strcpy(wild_name, dir_name);
+//  uint8_t wild_name_suffix = strlen(wild_name) > 0 ? wild_name[ strlen(wild_name) - 1 ] : '\0';
+//  if (wild_name_suffix != '\0' && wild_name_suffix != ':' && wild_name_suffix != '\\' && wild_name_suffix != '/') {
+//    strcat(wild_name, "\\*.*");
+//  } else {
+//    strcat(wild_name, "*.*");
+//  }
 
   // scan directory
   struct FILBUF filbuf = { 0 };
-  if (FILES(&filbuf, wild_name, 0x31) < 0) {    // read only + file + dir
+//  if (FILES(&filbuf, wild_name, 0x31) < 0) {    // read only + file + dir
+  if (FILES(&filbuf, file_pattern, 0x31) < 0) {    // read only + file + dir
     if (current_dir_cluster == 0) {
-      printf("error: found no file. (%s)\n", wild_name);    // show message at root dir only
+      printf("error: found no file. (%s)\n", file_pattern);    // show message at root dir only
     }
     goto exit;
   }
 
+  // dir name
+  uint8_t dir_name[ MAX_PATH_LEN ];
+  strcpy(dir_name, file_pattern);
+  uint8_t* p0 = jstrrchr(dir_name, '\\');
+  uint8_t* p1 = jstrrchr(dir_name, '/');
+  uint8_t* p2 = jstrrchr(dir_name, ':');
+  if (p0 != NULL) {
+    p0[1] = '\0';
+  } else if (p1 != NULL) {
+    p1[1] = '\0';
+  } else if (p2 != NULL) {
+    p2[1] = '\0';
+  } else {
+    dir_name[0] = '\0';
+  }
+
+  // sub dir scan pattern for recursive access
+  uint8_t sub_dir_pattern[ MAX_PATH_LEN ];
+
   do {
+
+    // skip dot dirs
+    if (strcmp(filbuf.name, ".") == 0 || strcmp(filbuf.name, "..") == 0) goto next;
 
     // full path name
     uint8_t path_name[ MAX_PATH_LEN ];
-    strcpy(path_name, wild_name);
-    path_name[ strlen(path_name) - 3 ] = '\0';
-    strcat(path_name, filbuf.name);                 // replace last *.* with real file name
+    strcpy(path_name, dir_name);
+    strcat(path_name, filbuf.name);
 
     if (filbuf.atr & FAT12_DIR_ATTR_DIRECTORY) {
 
       // count files in sub dir
       struct FILBUF sub_buf = { 0 };
-      uint8_t sub_dir_name [ MAX_PATH_LEN ];
-      strcpy(sub_dir_name, path_name);
-      strcat(sub_dir_name, "\\*.*");
+      strcpy(sub_dir_pattern, path_name);
+      strcat(sub_dir_pattern, "\\*.*");
       int16_t num_sub_files = 2;
-      if (FILES(&sub_buf, sub_dir_name, 0x31) >= 0) {
+      if (FILES(&sub_buf, sub_dir_pattern, 0x31) >= 0) {
         do {
-          if (sub_buf.filelen < XDF_SIZE_BYTES) {
+          if (strcmp(sub_buf.name, ".") != 0 && strcmp(sub_buf.name, "..") != 0 && sub_buf.filelen < XDF_SIZE_BYTES) {
             num_sub_files++;
           }
         } while (NFILES(&sub_buf) >= 0);
@@ -74,7 +96,7 @@ static int32_t add_dir(FAT12* fat, uint8_t* dir_name, int16_t current_dir_cluste
       if (found < num_clusters) {
         printf("%-24s ... disk full!!\n", path_name);
         rc = 1;
-        goto next;        
+        goto exit;        
       }
 
       // write empty directory table to XDF
@@ -99,17 +121,19 @@ static int32_t add_dir(FAT12* fat, uint8_t* dir_name, int16_t current_dir_cluste
 
     } else {
 
-      // file
-      int16_t num_clusters = 1 + filbuf.filelen / XDF_SECTOR_BYTES;
-      if (num_clusters > FAT12_NUM_ALLOCATIONS) {
-        // too large to archive
+      // check too large file
+      if (filbuf.filelen >= XDF_SIZE_BYTES) {
         printf("%-24s ... skipped (%6d bytes)\n", path_name, filbuf.filelen);
         goto next;
       }
+
+      // file
+      int16_t num_clusters = 1 + filbuf.filelen / XDF_SECTOR_BYTES;
       int16_t found = fat12_find_free_clusters(fat, num_clusters, clusters);
       if (found < num_clusters) {
-        printf("%-24s ... skipped (%6d bytes)\n", path_name, filbuf.filelen);
-        goto next;
+        printf("%-24s ... disk full!! (%6d bytes)\n", path_name, filbuf.filelen);
+        rc = 1;
+        goto exit;
       }
 
       FILE* fp = fopen(path_name, "rb");
@@ -152,7 +176,7 @@ static int32_t add_dir(FAT12* fat, uint8_t* dir_name, int16_t current_dir_cluste
 
     if (filbuf.atr & FAT12_DIR_ATTR_DIRECTORY) {
       printf("%-24s ... added (directory)\n", path_name);
-      add_dir(fat, path_name, clusters[0], sort_entries, resume_marker);
+      add_files(fat, sub_dir_pattern, clusters[0], sort_entries, resume_marker);
     } else {
       printf("%-24s ... added (%6d bytes)\n", path_name, filbuf.filelen);        
     }
@@ -173,7 +197,7 @@ exit:
 //  show help message
 //
 static void show_help_message() {
-  printf("usage: xdfarc <xdf-name> <dir-name>\n");
+  printf("usage: xdfarc <xdf-name> <file or dir>\n");
   printf("options:\n");
 //  printf("   -m ... create multiple XDF automatically\n");
 //  printf("   -s ... sort directory entries\n");
@@ -265,7 +289,7 @@ loop:
   }
 
   // add files and dirs
-  rc = add_dir(&fat, (dir_name == NULL || strcmp(dir_name, ".") == 0) ? (uint8_t*)"" : dir_name, 0, sort_entries, &resume_marker);
+  rc = add_files(&fat, (dir_name == NULL || strcmp(dir_name, ".") == 0) ? (uint8_t*)"*.*" : dir_name, 0, sort_entries, &resume_marker);
 
   if (rc == 0) {
     printf("done.\n");
