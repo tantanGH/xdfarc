@@ -41,7 +41,7 @@ XDFARxxx.ZIP をダウンロードして展開し、XDFARC.X をパスの通っ�
 
 ---
 
-### その他の XDF 関連ツール
+### その他のXDF関連プログラム
 
-- [XDFWRITE.X](https://github.com/tantanGH/xdfwrite)
-- [DIM2XDF.X](https://github.com/tantanGH/dim2xdf)
+- [XDFWRITE.X](https://github.com/tantanGH/xdfwrite) ... XDFを実FDに書き込む
+- [DIM2XDF.X](https://github.com/tantanGH/dim2xdf) ... DIMをXDFに変換する
