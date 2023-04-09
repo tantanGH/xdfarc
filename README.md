@@ -2,7 +2,7 @@
 
 XDF file archiver for X680x0/Human68k
 
-Human68k上のファイル・ディレクトリを再起的にXDFにアーカイブします。
+Human68k上のファイル・ディレクトリを再帰的にXDFにアーカイブします。
 
 1枚のXDFに収まらない場合は自動的に複数のXDFを作成することもできます。
 
