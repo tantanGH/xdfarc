@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define VERSION "0.1.0 (2023/04/01)"
+#define VERSION "0.2.0 (2023/04/09)"
 
 #define MAX_PATH_LEN (256)
 

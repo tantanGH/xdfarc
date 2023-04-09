@@ -68,6 +68,14 @@ void fat12_set_allocation(FAT12* fat, int16_t entry_index, int16_t new_allocatio
   }
 }
 
+int32_t fat12_read_cluster(FAT12* fat, int16_t cluster, uint8_t* buf) {
+  return xdf_read(fat->xdf, 11 + cluster - 2, 1, buf);
+}
+
+int32_t fat12_write_cluster(FAT12* fat, int16_t cluster, uint8_t* buf) {
+  return xdf_write(fat->xdf, 11 + cluster - 2, 1, buf);
+}
+
 int32_t fat12_find_free_clusters(FAT12* fat, int16_t num_clusters, int16_t* clusters) {
 
   int16_t found = 0;
@@ -202,13 +210,4 @@ int32_t fat12_add_dir_entry(FAT12* fat, int16_t current_dir_cluster, FAT12_DIR_E
   } while (e == NULL);
 
   return rc;
-}
-
-int32_t fat12_read_cluster(FAT12* fat, int16_t cluster, uint8_t* buf) {
-  return xdf_read(fat->xdf, 11 + cluster - 2, 1, buf);
-}
-
-int32_t fat12_write_cluster(FAT12* fat, int16_t cluster, uint8_t* buf) {
-//  printf("write cluster %d\n",cluster);
-  return xdf_write(fat->xdf, 11 + cluster - 2, 1, buf);
 }

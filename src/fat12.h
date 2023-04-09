@@ -41,20 +41,18 @@ typedef struct {
 
 int32_t fat12_init(FAT12* fat, XDF* xdf);
 void fat12_close(FAT12* fat);
-
 int32_t fat12_flush(FAT12* fat);
 
 int16_t fat12_get_allocation(FAT12* fat, int16_t entry_index);
 void fat12_set_allocation(FAT12* fat, int16_t entry_index, int16_t new_allocation);
 
-int32_t fat12_find_free_clusters(FAT12* fat, int16_t num_clusters, int16_t* clusters);
+int32_t fat12_read_cluster(FAT12* fat, int16_t cluster, uint8_t* buf);
+int32_t fat12_write_cluster(FAT12* fat, int16_t cluster, uint8_t* buf);
 
+int32_t fat12_find_free_clusters(FAT12* fat, int16_t num_clusters, int16_t* clusters);
 void fat12_create_dir_entry(FAT12* fat, FAT12_DIR_ENTRY* dir_ent, uint8_t* file_name, uint8_t attr, uint16_t file_date, uint16_t file_time, uint32_t file_size, int16_t first_cluster);
 
 int32_t fat12_add_root_dir_entry(FAT12* fat, FAT12_DIR_ENTRY* dir_ent);
 int32_t fat12_add_dir_entry(FAT12* fat, int16_t current_dir_cluster, FAT12_DIR_ENTRY* dir_ent);
-
-int32_t fat12_read_cluster(FAT12* fat, int16_t cluster, uint8_t* buf);
-int32_t fat12_write_cluster(FAT12* fat, int16_t cluster, uint8_t* buf);
 
 #endif

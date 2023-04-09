@@ -102,7 +102,7 @@ int32_t xdf_init(XDF* xdf, const uint8_t* xdf_name) {
   fseek(xdf->fp, 0x000C00, SEEK_SET);
   fwrite(FAT2_HEADER, 1, 3, xdf->fp);
 
-  // 0x002bff まで 0x00 埋め (FAT header は後から書くから書かない)
+  // 0x002bff まで 0x00 埋め
   fseek(xdf->fp, 0x002c00, SEEK_SET);
 
   // 0x133fff まで 0xe5 埋め
