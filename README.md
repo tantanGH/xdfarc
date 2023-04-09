@@ -35,4 +35,13 @@ XDFARxxx.ZIP をダウンロードして展開し、XDFARC.X をパスの通っ�
 
 ---
 
+### 変更履歴
+
 * 0.2.0 (2023/04/09) ... 初版
+
+---
+
+### その他の XDF 関連ツール
+
+- [XDFWRITE.X](https://github.com/tantanGH/xdfwrite)
+- [DIM2XDF.X](https://github.com/tantanGH/dim2xdf)
