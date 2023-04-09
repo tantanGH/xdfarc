@@ -49,3 +49,11 @@ XDFARxxx.ZIP をダウンロードして展開し、XDFARC.X をパスの通っ�
 
 - [XDFWRITE.X](https://github.com/tantanGH/xdfwrite) ... XDFを実FDに書き込む
 - [DIM2XDF.X](https://github.com/tantanGH/dim2xdf) ... DIMをXDFに変換する
+
+---
+
+### その他のファイル転送関連プログラム
+
+- [RSRX.X](https://github.com/tantanGH/rsrx) ... RS232C(UART)経由でファイル受信
+- [RSTX.X](https://github.com/tantanGH/rstx) ... RS232C(UART)経由でファイル送信
+
